@@ -11,7 +11,7 @@ const SPLITS = {
   canary ({ branch, hostname }) {
     return {
       canary: {
-        path: process.env.NEXT_SPLIT_CANARY_PATH,
+        path: process.env.NEXT_SPLIT_CANARY_PATH || process.env.NEXT_SPLIT_PATH,
         hosts: {
           main: {
             host: `https://${BRANCH_HOST_MAP.main}`,
@@ -28,7 +28,7 @@ const SPLITS = {
   canaryStaging ({ branch, hostname }) {
     return {
       canary: {
-        path: '/',
+        path: process.env.NEXT_SPLIT_CANARY_PATH || process.env.NEXT_SPLIT_PATH,
         hosts: {
           staging: {
             host: `https://${BRANCH_HOST_MAP.staging}`,

@@ -8,12 +8,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 nextEnv.loadEnvConfig(resolve(__dirname, '..'));
 
-if (!process.env.NEXT_SPLIT_ACTIVE) {
+if (![ '0', '1' ].includes(process.env.NEXT_SPLIT_ACTIVE)) {
   throw new Error(`Expected to find process.env.NEXT_SPLIT_ACTIVE = 0 or 1`);
 }
 const isActive = Boolean(Number(process.env.NEXT_SPLIT_ACTIVE));
+const path = process.env.NEXT_SPLIT_PATH || '/';
 
-const MIDDLEWARE_PATH_ACTIVE = resolve(__dirname, '..', 'pages', '_middleware.js');
+const MIDDLEWARE_PATH_ACTIVE = resolve(resolve(__dirname, '..', 'pages', `.${path}`, '_middleware.js'));
 const MIDDLEWARE_PATH_INACTIVE = resolve(__dirname, '..', 'withSplit.middleware.js');
 
 function installMiddleware () {
@@ -28,13 +29,11 @@ function removeMiddleware () {
 
 switch (isActive) {
 case false:
-  console.info('split traffic disabled, removing middleware');
+  console.info(`split traffic disabled, removing middleware from ${MIDDLEWARE_PATH_ACTIVE}`);
   removeMiddleware();
   break;
 case true:
-  console.info('split traffic enabled, installing middleware');
+  console.info(`split traffic enabled, installing middleware to ${MIDDLEWARE_PATH_ACTIVE}`);
   installMiddleware();
   break;
-default:
-  throw new Error(`Expected isActive to be boolean but found ${isActive}`);
 }
